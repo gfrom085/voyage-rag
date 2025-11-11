@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-**Last Modified:** 2025-11-10
+**Last Modified:** 2025-11-11
 
 ---
 
@@ -10,9 +10,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Voyage RAG** is a production-ready semantic search system (RAG - Retrieval-Augmented Generation) combining:
 - **Voyage AI** embeddings (voyage-3 & voyage-3-lite models)
-- **FAISS** vector search with HNSW indexing for efficient similarity search
+- **Voyage AI** rerank for improved result relevance
+- **ChromaDB** vector database with metadata filtering and client-server architecture
 - **FastAPI** REST API with JWT authentication and rate limiting
-- **Docker** containerization with Traefik reverse proxy for production deployment
+- **Docker Compose** containerization for multi-service deployment (ChromaDB + API)
 
 **Project Stage:** POC/MVP - Focus on velocity over perfection. This is a solo development project with strict adherence to planning documents.
 
@@ -46,9 +47,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```
 src/voyage_rag/
-├── core/          # Voyage AI client, embeddings, configuration
-├── indexing/      # Document loading, chunking, batch indexing
-├── search/        # FAISS search engine, result ranking
+├── core/          # Configuration, models, exceptions
+├── indexing/      # Voyage AI client, document chunking, ChromaDB indexing
+├── search/        # ChromaDB retrieval, Voyage AI reranking
 ├── api/           # FastAPI endpoints, auth, rate limiting
 └── utils/         # Monitoring, logging, cost tracking
 ```
@@ -186,20 +187,26 @@ curl http://localhost:8000/stats \
    - voyage-3-lite: ~$0.06/1M tokens (after free tier)
    - Token usage logged for monitoring
 
-### FAISS Vector Search
+### ChromaDB Vector Database
 
-**Index Configuration:**
+**Configuration:**
 
-- **Index Type**: HNSW (Hierarchical Navigable Small World) for speed/accuracy balance
+- **Client Type**: HTTP Client (client-server architecture)
 - **Parameters** (configurable in `.env`):
-  - `FAISS_HNSW_M=64`: Links per node (32-64 recommended)
-  - `FAISS_HNSW_EF_CONSTRUCTION=200`: Build quality (100-500 recommended)
-  - `FAISS_HNSW_EF_SEARCH=128`: Search quality (64-256 recommended)
+  - `CHROMA_HOST=localhost`: ChromaDB server hostname
+  - `CHROMA_PORT=8000`: ChromaDB server port
+  - `CHROMA_COLLECTION=voyage_documents`: Collection name
+
+**Key Features:**
+- Metadata filtering with SQL-like syntax (where clauses)
+- Automatic persistence (no manual save required)
+- CRUD operations (add, query, update, delete)
+- Native support for embeddings + documents + metadata together
 
 **Performance Characteristics:**
-- Search latency: <100ms for voyage-3-lite
-- Indexing throughput: 10,000 documents/hour
-- Memory: ~4KB per document (1024-dim embeddings)
+- Search latency: 5-20ms for small corpus (<100k docs)
+- Indexing throughput: 10,000 documents/hour with batching
+- Memory: ~4KB per document (1024-dim embeddings + metadata)
 
 ### FastAPI Architecture
 
@@ -289,9 +296,10 @@ Optional context or reasoning
 ### Test Coverage Expectations
 
 **Critical modules require tests:**
-- `core/voyage_client.py` - Embedding generation, batching, rate limit handling
-- `search/faiss_engine.py` - Index creation, search, result ranking
-- `api/endpoints.py` - All endpoints, auth, rate limiting
+- `indexing/voyage_client.py` - Embedding generation, batching, rate limit handling
+- `search/retriever.py` - ChromaDB query, metadata filtering
+- `search/reranker.py` - Voyage AI reranking
+- `api/routes.py` - All endpoints, auth, rate limiting
 - `indexing/chunker.py` - Text chunking with overlap
 
 **Test Types:**
@@ -308,25 +316,25 @@ Optional context or reasoning
 ### Services Architecture
 
 **docker-compose.yml defines:**
-1. **api**: FastAPI application (port 8000)
-2. **traefik**: Reverse proxy with SSL/TLS (ports 80, 443)
+1. **chromadb**: Vector database service (port 8000)
+2. **api**: FastAPI application (port 8001)
 
-**Traefik Configuration:**
-- Automatic SSL certificates via Let's Encrypt
-- ACME challenge (HTTP-01)
-- Domain routing via `DOMAIN` environment variable
-- Dashboard authentication via `TRAEFIK_DASHBOARD_AUTH`
+**ChromaDB Configuration:**
+- Persistent storage in `data/chromadb` volume
+- HTTP API on port 8000
+- Health check endpoint for dependency management
+- Environment: `IS_PERSISTENT=TRUE`
 
 ### Production Checklist
 
 Before deploying:
 1. ✅ Set production `VOYAGE_API_KEY` in `.env`
 2. ✅ Generate secure `API_KEYS` (use `secrets.token_urlsafe(32)`)
-3. ✅ Configure `DOMAIN` and `ACME_EMAIL` for SSL
+3. ✅ Configure `CHROMA_HOST` and `CHROMA_PORT` (default: chromadb:8000)
 4. ✅ Set restrictive `CORS_ORIGINS` (no `*` in production)
-5. ✅ Create Traefik dashboard auth with `htpasswd`
+5. ✅ Verify ChromaDB volume is persistent (`data/chromadb`)
 6. ✅ Test rate limiting and authentication
-7. ✅ Verify FAISS indices are persisted in `data/indices/`
+7. ✅ Ensure ChromaDB health check passes before API starts
 8. ✅ Set up monitoring and log aggregation
 
 ---
@@ -340,10 +348,11 @@ Before deploying:
 - Verify retry logic with exponential backoff
 - Monitor token usage via `scripts/monitor_costs.py`
 
-**FAISS Index Not Found:**
-- Run `scripts/index_documents.py` to create initial index
-- Check `data/indices/` directory permissions
-- Verify `FAISS_INDEX_TYPE` environment variable
+**ChromaDB Connection Failed:**
+- Verify ChromaDB service is running (`docker-compose ps chromadb`)
+- Check `CHROMA_HOST` and `CHROMA_PORT` in `.env`
+- Test connection: `curl http://localhost:8000/api/v1/heartbeat`
+- Review ChromaDB logs: `docker-compose logs chromadb`
 
 **Authentication Failures:**
 - Verify `API_KEYS` format (comma-separated, no spaces)
@@ -351,9 +360,10 @@ Before deploying:
 - Ensure key matches one in `API_KEYS` list
 
 **Slow Search Performance:**
-- Use `voyage-3-lite` instead of `voyage-3`
-- Tune `FAISS_HNSW_EF_SEARCH` (lower = faster, less accurate)
-- Enable query caching (`ENABLE_CACHE=true`)
+- Use `voyage-3-lite` instead of `voyage-3` for faster embeddings
+- Enable Voyage AI reranking only when necessary (`use_rerank=false`)
+- Use metadata filters to reduce search space
+- Monitor ChromaDB collection size (consider archiving old data)
 
 ---
 
@@ -379,7 +389,7 @@ This project follows a **deterministic, plan-driven development model**:
 ## Additional Resources
 
 - **Voyage AI Docs**: https://docs.voyageai.com
-- **FAISS Documentation**: https://github.com/facebookresearch/faiss/wiki
+- **ChromaDB Docs**: https://docs.trychroma.com
 - **FastAPI Docs**: https://fastapi.tiangolo.com
 - **MTEB Leaderboard** (embedding model rankings): https://huggingface.co/spaces/mteb/leaderboard
 
