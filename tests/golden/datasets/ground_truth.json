@@ -1,0 +1,25 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "description": "Ground truth pour évaluation: ranked lists attendues par query",
+    "evaluation_metrics": ["ndcg@5", "ndcg@10", "mrr", "kendall_tau"]
+  },
+  "ground_truth": [
+    {
+      "query_id": "example_q1",
+      "expected_ranking": [
+        {
+          "doc_id": "example_doc_1",
+          "rank": 1,
+          "relevance_score": 3,
+          "notes": "Très pertinent"
+        }
+      ],
+      "expected_tier_distribution": {
+        "TOP": 3,
+        "MID": 2,
+        "LOW": 0
+      }
+    }
+  ]
+}

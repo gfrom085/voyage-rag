@@ -1,0 +1,26 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "description": "Requêtes de test pour évaluation de granularité sémantique",
+    "total_queries": 0,
+    "categories": ["ordinal", "comparative", "superlative", "numeric", "multilingual"]
+  },
+  "queries": [
+    {
+      "id": "example_q1",
+      "text": "Quel est le meilleur modèle d'embedding ?",
+      "category": "superlative",
+      "expected_tier": "TOP",
+      "language": "fr",
+      "notes": "Doit retourner docs avec tier=TOP en priorité"
+    },
+    {
+      "id": "example_q2",
+      "text": "Option économique pour embeddings",
+      "category": "comparative",
+      "expected_tier": "LOW",
+      "language": "fr",
+      "notes": "Doit retourner docs avec tier=LOW ou MID-LOW"
+    }
+  ]
+}
