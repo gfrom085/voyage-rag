@@ -1,0 +1,32 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "description": "Documents techniques avec labels hiérarchiques pour tests de granularité sémantique",
+    "total_documents": 0,
+    "tiers": ["TOP", "TOP-MID", "MID-TOP", "MID", "MID-LOW", "LOW-MID", "LOW"],
+    "score_ranges": {
+      "TOP": "≥80",
+      "TOP-MID": "75-79",
+      "MID-TOP": "70-74",
+      "MID": "65-69",
+      "MID-LOW": "60-64",
+      "LOW-MID": "55-59",
+      "LOW": "<55"
+    }
+  },
+  "documents": [
+    {
+      "id": "example_doc_1",
+      "text": "Exemple de document technique avec contenu pertinent sur les embeddings",
+      "title": "Introduction aux embeddings vectoriels",
+      "score": 85,
+      "tier": "TOP",
+      "domain": "tech",
+      "metadata": {
+        "category": "embeddings",
+        "language": "fr",
+        "length": "medium"
+      }
+    }
+  ]
+}
