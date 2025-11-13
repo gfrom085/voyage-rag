@@ -3,6 +3,14 @@
 > **Usage** : Ce prompt doit être lu par tout agent avant d'exécuter une tâche de création de document.
 > Il établit le contexte déterministe et les contraintes absolues du projet.
 
+## 📚 DOCUMENTS DE RÉFÉRENCE OBLIGATOIRES
+
+Avant de commencer votre document, vous DEVEZ consulter :
+1. **Ce document (PRIMING.md)** : Contexte général et contraintes absolues
+2. **LEXICON.md** : Référence lexicale exhaustive par tier ⚠️ **CRITIQUE**
+
+**Le LEXICON.md contient le tableau hiérarchique complet de TOUS les synonymes et expressions par tier (TOP → LOW). Consulter ce lexique AVANT d'écrire est OBLIGATOIRE pour éviter le drift lexical.**
+
 ---
 
 ## 🎯 CONTEXTE DU PROJET

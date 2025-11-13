@@ -9,6 +9,9 @@
 ```
 prompts/
 ├── PRIMING.md              # ⚠️ À lire EN PREMIER (contexte universel)
+├── LEXICON.md              # 🔴 CRITIQUE - Référence lexicale (NOUVEAU)
+├── ORCHESTRATOR.md         # Agent coordinateur du workflow
+├── VALIDATOR.md            # Agent de validation qualité
 ├── tier_TOP.md             # 4 prompts (scores 86-92)
 ├── tier_TOP-MID.md         # 6 prompts (scores 78-82) - ZONE CRITIQUE
 ├── tier_MID-TOP.md         # 6 prompts (scores 72-77) - ZONE CRITIQUE
@@ -22,19 +25,41 @@ prompts/
 
 **Total : 34 prompts de tâches**
 
+### ⚠️ NOUVEAU : LEXICON.md - Référence Lexicale Exhaustive
+
+**Ajouté le 2025-11-13** pour prévenir le drift lexical systématique.
+
+**Contient** :
+- Tableau hiérarchique complet TOP → LOW avec TOUS les synonymes
+- Mots "signature" identifiant instantanément chaque tier
+- Règles de détection du drift (seuils 5%, 10%, 20%)
+- Exemples concrets de drift par tier
+- Checklist de validation lexicale obligatoire
+
+**Utilisation CRITIQUE** :
+- **Générateurs** : Consulter AVANT d'écrire le document
+- **Validateur** : Vérifier systématiquement chaque qualificatif clé
+- **Drift >10%** : Révision obligatoire du document
+
+**Pourquoi** : Sans référence lexicale centralisée, drift inévitable (ex: "optimale" dans titre TOP-MID, "solide" dans conclusion TOP-MID → incohérences critiques).
+
 ---
 
 ## 🔄 Workflow Complet
 
-### Étape 1 : Lire le PRIMING
+### Étape 1 : Lire PRIMING + LEXICON
 
 **Pour CHAQUE session d'agent CC** :
 
 1. Ouvrir une **nouvelle session Claude Code**
 2. Copier-coller **l'intégralité de `PRIMING.md`**
-3. Attendre confirmation de lecture par l'agent
+3. Copier-coller **l'intégralité de `LEXICON.md`** ⚠️ **CRITIQUE**
+4. Attendre confirmation de lecture par l'agent
 
-**Important** : Le PRIMING doit être fourni à chaque nouvelle session. Il établit le contexte déterministe complet.
+**Important** :
+- Le PRIMING établit le contexte déterministe complet
+- Le LEXICON prévient le drift lexical (référence vocabulaire par tier)
+- **Sans LEXICON, drift garanti**
 
 ### Étape 2 : Sélectionner un Prompt de Tâche
 
