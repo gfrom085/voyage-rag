@@ -152,67 +152,76 @@ Maintenez cette liste à jour avec les statuts :
 
 **Réponse attendue** : Utilisez le template ci-dessous avec les valeurs spécifiques au document.
 
+**IMPORTANT** : Ne copiez PAS le contenu des fichiers. Donnez uniquement les références (chemins). L'agent générateur lira les fichiers lui-même.
+
 ```markdown
-📋 PROCHAIN DOCUMENT RECOMMANDÉ
+📋 DOCUMENT À GÉNÉRER : [DOCUMENT_ID]
 
-ID: TOPMID_1_FR_NUMERIC
-Tier: TOP-MID
-Score: 81
-Langue: Français
-Type: Avec indices numériques
-
-⚠️ ZONE CRITIQUE : Ce tier est le plus subtil. Excellence SANS superlatifs absolus.
-
----
-
-## 🎯 INSTRUCTIONS
-
-### ÉTAPE 1 : Lisez les documents de référence
-
-**Obligatoires (dans cet ordre - TOUS doivent être lus)** :
-
-1. **Référence lexicale** (⚠️ CRITIQUE - lire EN PREMIER) :
-   - `tests/golden/prompts/LEXICON.md`
-   - Focus : Section "[TIER NAME] (Scores XX-YY)"
-   - Consultez les "Mots Signature" pour identifier les termes INTERDITS
-
-2. **Contexte universel** :
-   - `tests/golden/prompts/PRIMING.md`
-   - ⚠️ Suivez le workflow avec 5 pauses LEXICON (section "Workflow Optimal")
-
-3. **Prompt spécifique pour ce document** :
-   - `tests/golden/prompts/tier_[TIER].md` (Section : PROMPT X/Y)
+**Métadonnées** :
+- ID: [DOCUMENT_ID]
+- Tier: [TIER]
+- Score: [XX]
+- Langue: [Français/English]
+- Type: [Avec indices numériques / Sémantique pur / Mixte / Leurre]
 
 ---
 
-### ÉTAPE 2 : Créez le document
+## 📚 ÉTAPE 1 : Lire les documents de référence
 
-**Spécifications** :
-- ✅ Minimum 800 mots
-- ✅ [Type spécifique : indices numériques / sémantique pur / mixte]
-- ✅ **Vocabulaire [TIER] UNIQUEMENT** :
-  - ✅ AUTORISÉ : [Exemples de mots du LEXICON pour ce tier]
-  - ❌ INTERDIT : [Mots signature des autres tiers]
-- ✅ [Caractéristiques spécifiques au tier]
+**Lisez dans cet ordre (OBLIGATOIRE)** :
 
-**⚠️ PROTOCOLE ANTI-DRIFT OBLIGATOIRE** :
-- **Pendant la rédaction** : 5 pauses pour vérifier LEXICON.md
-  1. Après introduction → vérifier 3-4 mots
-  2. Après corps principal → vérifier 5-7 mots
-  3. Après conclusion → vérifier TOUS les mots (tolérance ZÉRO)
-  4. Après titre → vérifier TOUS les mots (tolérance ZÉRO)
-  5. Validation finale → extraire 10-15 mots, calculer drift %
+1. **`tests/golden/prompts/LEXICON.md`** ⚠️ CRITIQUE
+   - Lire en PREMIER
+   - Focus sur la section : **"TIER [TIER_NAME] (Scores XX-YY)"**
+   - Consultez la section **"Mots Signature"**
+   - Notez 5-7 mots **AUTORISÉS** et 5-7 mots **INTERDITS**
 
-**Output** : JSON complet avec champs :
+2. **`tests/golden/prompts/PRIMING.md`**
+   - Contexte universel et contraintes absolues
+   - Suivez le **"Workflow Optimal"** avec 5 pauses LEXICON
+   - Section **"Protocole d'Auto-Vérification Lexicale"** (obligatoire)
+
+3. **`tests/golden/prompts/tier_[TIER].md`**
+   - Cherchez la section : **"PROMPT [X]/[Y]"**
+   - Spécifications exactes pour ce document
+
+---
+
+## ⚠️ RAPPELS CRITIQUES
+
+**Vocabulaire [TIER]** :
+- ✅ AUTORISÉ : [Liste 3-5 mots du LEXICON]
+- ❌ INTERDIT : [Mots signature des tiers adjacents]
+
+**Zones à tolérance ZÉRO** :
+- 🚨 Titre : Aucun mot signature d'autre tier
+- 🚨 Conclusion : Aucun mot signature d'autre tier
+
+**Protocole anti-drift (5 pauses LEXICON)** :
+1. Après introduction → vérifier 3-4 mots
+2. Après corps principal → vérifier 5-7 mots
+3. Après conclusion → vérifier TOUS les mots (tolérance ZÉRO)
+4. Après titre → vérifier TOUS les mots (tolérance ZÉRO)
+5. Validation finale → extraire 10-15 mots, calculer drift %
+
+**Drift accepté** : < 5% (formule : hors-tier / total × 100)
+
+---
+
+## 📝 ÉTAPE 2 : Créer le document JSON
+
+**Fichier** : `tests/golden/documents/[DOCUMENT_ID].json`
+
+**Format** :
 ```json
 {
   "id": "[DOCUMENT_ID]",
   "title": "...",
-  "text": "...",
-  "score": XX,
+  "text": "... (≥ 800 mots)",
+  "score": [XX],
   "tier": "[TIER]",
   "self_validation": {
-    "semantic_choices": "Vocabulaire utilisé : [liste mots TIER]. Mots ÉVITÉS : [mots autres tiers évités]. Titre vérifié dans LEXICON : [détails]. Conclusion vérifiée dans LEXICON : [détails]. Consultations LEXICON : 5 pauses effectuées. Drift estimé : X%.",
+    "semantic_choices": "Vocabulaire utilisé : [liste]. Mots ÉVITÉS : [liste]. Titre vérifié dans LEXICON : [détails]. Conclusion vérifiée : [détails]. Consultations LEXICON : 5 pauses. Drift estimé : X%.",
     "quality_check": "..."
   }
 }
@@ -220,18 +229,13 @@ Type: Avec indices numériques
 
 ---
 
-### ÉTAPE 3 : Créez le commit
-
-**Une fois le document terminé** :
-
-1. Créez un fichier JSON dans `tests/golden/documents/`
-2. Committez avec message structuré :
+## 💾 ÉTAPE 3 : Créer le commit
 
 ```bash
 git add tests/golden/documents/[DOCUMENT_ID].json
 git commit -m "feat: Generate golden document [DOCUMENT_ID]
 
-- Tier: [TIER] (score XX)
+- Tier: [TIER] (score [XX])
 - Language: [FR/EN]
 - Type: [numeric/semantic/mixed/leurre]
 - Word count: XXX words
@@ -240,7 +244,7 @@ git commit -m "feat: Generate golden document [DOCUMENT_ID]
 
 ---
 
-### ÉTAPE 4 : Quand terminé
+## ✅ ÉTAPE 4 : Notification
 
 Dites-moi : **"[DOCUMENT_ID] est terminé et committé"**
 
@@ -248,16 +252,15 @@ Je mettrai à jour la todo list et vous donnerai le document suivant.
 
 ---
 
-**Bonne création ! 🎯**
-
-**Temps estimé** : 45-60 minutes (incluant 5 pauses vérification LEXICON + commit)
+⏱️ **Temps estimé** : 45-60 minutes
 ```
 
 **Notes d'implémentation pour l'orchestrateur** :
-- Remplacez `[DOCUMENT_ID]`, `[TIER]`, `[TIER NAME]`, etc. par les valeurs réelles
-- Pour TOP-MID : mots autorisés = "parmi les meilleurs", "d'excellence", "remarquable"
-- Pour TOP-MID : mots interdits = "optimal" (TOP), "solide" (MID-TOP)
-- Adaptez les exemples selon le tier du document
+- Remplacez `[DOCUMENT_ID]`, `[TIER]`, `[TIER_NAME]`, `[XX]`, `[X]`, `[Y]` par les valeurs réelles
+- Pour vocabulaire AUTORISÉ/INTERDIT : donnez 3-5 exemples extraits du LEXICON.md pour ce tier spécifique
+- Exemples pour TOP-MID :
+  - AUTORISÉ : "parmi les meilleurs", "d'excellence", "remarquable", "performances supérieures"
+  - INTERDIT : "optimal" (TOP), "solide" (MID-TOP), "fiable" (MID-TOP)
 
 ### 2. "Donne-moi le document [ID]"
 
