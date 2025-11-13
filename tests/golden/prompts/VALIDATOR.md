@@ -29,16 +29,20 @@ Vous êtes responsable de **valider la qualité et la conformité** de chaque do
 
 ## 📥 INPUTS QUE VOUS RECEVREZ
 
-L'utilisateur vous fournira **3 éléments** :
+L'utilisateur vous fournira **4 éléments** :
 
 ### 1. PRIMING.md (Contexte Universel)
 Le contexte complet du projet, objectifs, contraintes.
 
-### 2. Prompt de Tâche Spécifique
+### 2. LEXICON.md (Référence Lexicale) ⚠️ **CRITIQUE**
+Le tableau exhaustif du vocabulaire autorisé/interdit par tier.
+**VOUS DEVEZ consulter ce lexique pour chaque validation.**
+
+### 3. Prompt de Tâche Spécifique
 Le prompt exact qui a été donné à l'agent générateur.
 Exemple : "PROMPT 1/6 : TOPMID_1_FR_NUMERIC"
 
-### 3. Document JSON Généré
+### 4. Document JSON Généré
 Le document produit par l'agent, au format JSON.
 
 ---
@@ -75,43 +79,80 @@ Le document produit par l'agent, au format JSON.
 
 #### B1. Vocabulaire Adapté au Tier
 
+**⚠️ VALIDATION LEXICALE OBLIGATOIRE avec LEXICON.md**
+
+Pour chaque document, vous DEVEZ :
+1. **Ouvrir LEXICON.md** et localiser la section du tier du document
+2. **Extraire 10-15 qualificatifs clés** du document à valider
+3. **Vérifier chaque qualificatif** dans le lexique (autorisé/interdit)
+4. **Identifier les mots "signature"** d'autres tiers (voir tableau LEXICON.md)
+5. **Calculer le % de drift** : (mots hors-tier / total mots clés) × 100
+
+**Seuils de drift** :
+- 0-5% : ✅ Excellent
+- 5-10% : ⚠️ Acceptable mais vigilance
+- 10-20% : ⚠️ Révision recommandée
+- >20% : ❌ Révision obligatoire
+
+**Vérifications critiques** :
+- [ ] **Titre** : Vocabulaire 100% conforme au tier (tolérance zéro)
+- [ ] **Conclusion** : Vocabulaire 100% conforme au tier (tolérance zéro)
+- [ ] **Mots "signature"** : Aucun mot signature d'un autre tier présent
+- [ ] **Glissements systématiques** : Pas de pattern répété de vocabulaire adjacent
+
+**Exemples de détection** :
+
+**Document TOP-MID avec drift TOP** :
+- ❌ "inégalé", "révolutionnaire", "le meilleur" → Révision obligatoire
+- ❌ Titre "Architecture **Optimale**" → Révision critique
+
+**Document TOP-MID avec drift MID-TOP** :
+- ❌ "solide", "fiable", "robuste" → Révision obligatoire
+- ❌ Conclusion "choix stratégique **solide**" → Révision critique
+
+**Document MID-TOP avec drift TOP-MID** :
+- ❌ "remarquable", "excellent", "proche du SOTA" → Révision obligatoire
+
+**RÉFÉRENCE RAPIDE par Tier** (voir LEXICON.md pour liste exhaustive) :
+
 **TOP (86-92)** :
-- [ ] Utilise des superlatifs forts : "révolutionnaire", "supérieur", "meilleur", "state-of-the-art", "breakthrough"
-- [ ] Tone confiant et affirmatif
-- [ ] Aucune nuance atténuante ("presque", "proche de")
+- ✅ Superlatifs absolus : "le meilleur", "inégalé", "révolutionnaire", "supérieur"
+- ✅ Tone : Confiant, affirmatif, leadership absolu
+- ❌ INTERDIT : Nuances ("parmi", "proche de"), reconnaissance de limites
 
 **TOP-MID (78-82)** ⚠️ :
-- [ ] Vocabulaire d'excellence AVEC nuances : "proche du meilleur", "remarquable", "excellent compromis"
-- [ ] Mention de contextes où ce n'est pas optimal (subtil)
-- [ ] Équilibre entre enthousiasme et pragmatisme
+- ✅ Superlatifs nuancés : "parmi les meilleurs", "proche du meilleur", "remarquable", "excellent"
+- ✅ Reconnaissance subtile de limites/contextes
+- ❌ INTERDIT : Superlatifs absolus (TOP), vocabulaire sobre (MID-TOP)
 
 **MID-TOP (72-77)** ⚠️ :
-- [ ] Vocabulaire positif mais sobre : "solide", "fiable", "bon choix", "robuste"
-- [ ] Pas de superlatifs
-- [ ] Focus sur fiabilité plutôt que performance de pointe
+- ✅ Qualificatifs positifs sobres : "solide", "fiable", "bon", "robuste"
+- ✅ Tone : Pragmatique, équilibré, factuel
+- ❌ INTERDIT : Superlatifs (TOP-MID), vocabulaire neutre (MID)
 
 **MID (65-71)** :
-- [ ] Vocabulaire neutre : "acceptable", "convenable", "standard", "adéquat"
-- [ ] Tone factuel, descriptif
-- [ ] Ni enthousiaste ni critique
+- ✅ Vocabulaire neutre : "acceptable", "convenable", "standard", "moyen"
+- ✅ Tone : Factuel, descriptif, ni enthousiaste ni critique
+- ❌ INTERDIT : Vocabulaire positif (MID-TOP), vocabulaire négatif (MID-LOW)
 
 **MID-LOW (60-64)** :
-- [ ] Vocabulaire prudent : "limitations notables", "contraintes", "avec réserves"
-- [ ] Honnêteté sur les faiblesses
-- [ ] Identification de cas d'usage restreints
+- ✅ Vocabulaire prudent : "limitations notables", "contraintes", "restreint"
+- ✅ Honnêteté sur faiblesses
+- ❌ INTERDIT : Vocabulaire neutre (MID), vocabulaire LOW
 
 **LOW-MID (55-59)** :
-- [ ] Vocabulaire de limitation forte : "très limité", "restreint", "basique", "contraintes majeures"
-- [ ] Frank sur capacités très restreintes
+- ✅ Vocabulaire de limitation forte : "très limité", "basique", "contraintes majeures"
+- ❌ INTERDIT : Vocabulaire MID-LOW (trop faible), vocabulaire LOW (focus différent)
 
 **LOW (50-54)** :
-- [ ] Vocabulaire budget/entry-level : "économique", "apprentissage", "prototypage", "minimal"
-- [ ] Coût/accessibilité comme argument principal
-- [ ] Honnête sur faiblesses importantes
+- ✅ Vocabulaire budget/entry-level : "économique", "apprentissage", "prototypage"
+- ✅ Focus coût/accessibilité
+- ❌ INTERDIT : Tout vocabulaire positif/neutre
 
 **LEURRES** :
-- [ ] Contradiction intentionnelle claire et identifiée
-- [ ] Justification de la contradiction dans self_validation
+- ✅ Contradiction intentionnelle entre deux tiers
+- [ ] Type de contradiction correspond au prompt
+- [ ] Justification claire dans self_validation
 
 #### B2. Cohérence Interne (Sauf Leurres)
 
