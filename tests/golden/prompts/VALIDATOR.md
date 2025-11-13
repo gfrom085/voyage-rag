@@ -154,6 +154,79 @@ Pour chaque document, vous DEVEZ :
 - [ ] Type de contradiction correspond au prompt
 - [ ] Justification claire dans self_validation
 
+---
+
+### 🔍 PROTOCOLE D'EXTRACTION SYSTÉMATIQUE (OBLIGATOIRE)
+
+**Pour CHAQUE document, vous DEVEZ produire ce tableau** :
+
+```markdown
+## Extraction des Qualificatifs Clés
+
+| # | Qualificatif/Expression | Position | Tier Détecté | Verdict |
+|---|-------------------------|----------|--------------|---------|
+| 1 | "..." | Titre | [TIER] | ✅/❌ |
+| 2 | "..." | Ligne X | [TIER] | ✅/❌ |
+| ... | ... | ... | ... | ... |
+| N | "..." | Conclusion | [TIER] | ✅/❌ |
+
+**Total qualificatifs extraits** : N
+**Conformes au tier** : X (Y%)
+**Hors-tier** : Z (W%)
+
+**Calcul du Drift** :
+- Drift % = (Z / N) × 100 = W%
+- Verdict selon seuil : [0-5% ✅ / 5-10% ⚠️ / 10-20% ⚠️ révision / >20% ❌]
+```
+
+**Instructions d'extraction** :
+1. **Titre** : Extraire TOUS les qualificatifs (1er mot clé obligatoire)
+2. **Introduction** (premiers 200 mots) : 3-4 qualificatifs
+3. **Corps principal** : 5-8 qualificatifs représentatifs
+4. **Conclusion** (derniers 200 mots) : 2-3 qualificatifs (dernier mot clé obligatoire)
+
+**Zones CRITIQUES à vérifier en priorité** :
+- ⚠️ **Titre** : Tolérance ZÉRO (vocabulaire hors-tier = révision obligatoire)
+- ⚠️ **Conclusion** : Tolérance ZÉRO (dernière impression = critique)
+- ⚠️ **Mots signature** : Identifier instantanément les drifts majeurs
+
+**Exemple concret pour TOP-MID** :
+
+```markdown
+## Extraction des Qualificatifs Clés - TOPMID_1_FR_NUMERIC
+
+| # | Qualificatif/Expression | Position | Tier Détecté | Verdict |
+|---|-------------------------|----------|--------------|---------|
+| 1 | "Architecture Optimale" | Titre | TOP | ❌ HORS-TIER |
+| 2 | "performances remarquables" | Ligne 2 | TOP-MID | ✅ |
+| 3 | "parmi les meilleures options" | Ligne 3 | TOP-MID | ✅ |
+| 4 | "excellent compromis" | Ligne 4 | TOP-MID | ✅ |
+| 5 | "proximité immédiate des leaders" | Ligne 7 | TOP-MID | ✅ |
+| 6 | "rivalise avec les meilleures" | Ligne 11 | TOP-MID (limite) | ⚠️ |
+| 7 | "atouts majeurs" | Ligne 15 | TOP-MID (limite) | ⚠️ |
+| 8 | "rapport qualité/prix remarquable" | Ligne 25 | TOP-MID | ✅ |
+| 9 | "l'un des meilleurs choix" | Ligne 800 | TOP-MID | ✅ |
+| 10 | "choix stratégique solide" | Conclusion | MID-TOP | ❌ HORS-TIER |
+
+**Total qualificatifs extraits** : 10
+**Conformes TOP-MID** : 6 (60%)
+**Limite acceptable** : 2 (20%)
+**Hors-tier** : 2 (20%)
+
+**Calcul du Drift** :
+- Drift strict = 2/10 × 100 = 20%
+- Drift avec limites = 4/10 × 100 = 40%
+- Verdict : ❌ RÉVISION OBLIGATOIRE (seuil >20% dépassé)
+
+**Problèmes identifiés** :
+1. ❌ Titre "Optimale" → vocabulaire TOP (superlatif absolu)
+2. ❌ Conclusion "solide" → vocabulaire MID-TOP (trop sobre)
+```
+
+**Ce protocole est OBLIGATOIRE** pour garantir la détection systématique des drifts.
+
+---
+
 #### B2. Cohérence Interne (Sauf Leurres)
 
 - [ ] Le vocabulaire est cohérent du début à la fin (pas de sauts de tier)
