@@ -150,38 +150,117 @@ Maintenez cette liste à jour avec les statuts :
 
 ### 1. "Donne-moi le prochain document à générer"
 
-**Réponse attendue** :
+**Réponse attendue** : Utilisez le template ci-dessous avec les valeurs spécifiques au document.
+
+**IMPORTANT** : Ne copiez PAS le contenu des fichiers. Donnez uniquement les références (chemins). L'agent générateur lira les fichiers lui-même.
+
+```markdown
+📋 DOCUMENT À GÉNÉRER : [DOCUMENT_ID]
+
+**Métadonnées** :
+- ID: [DOCUMENT_ID]
+- Tier: [TIER]
+- Score: [XX]
+- Langue: [Français/English]
+- Type: [Avec indices numériques / Sémantique pur / Mixte / Leurre]
+
+---
+
+## 📚 ÉTAPE 1 : Lire les documents de référence
+
+**Lisez dans cet ordre (OBLIGATOIRE)** :
+
+1. **`tests/golden/prompts/LEXICON.md`** ⚠️ CRITIQUE
+   - Lire en PREMIER
+   - Focus sur la section : **"TIER [TIER_NAME] (Scores XX-YY)"**
+   - Consultez la section **"Mots Signature"**
+   - Notez 5-7 mots **AUTORISÉS** et 5-7 mots **INTERDITS**
+
+2. **`tests/golden/prompts/PRIMING.md`**
+   - Contexte universel et contraintes absolues
+   - Suivez le **"Workflow Optimal"** avec 5 pauses LEXICON
+   - Section **"Protocole d'Auto-Vérification Lexicale"** (obligatoire)
+
+3. **`tests/golden/prompts/tier_[TIER].md`**
+   - Cherchez la section : **"PROMPT [X]/[Y]"**
+   - Spécifications exactes pour ce document
+
+---
+
+## ⚠️ RAPPELS CRITIQUES
+
+**Vocabulaire [TIER]** :
+- ✅ AUTORISÉ : [Liste 3-5 mots du LEXICON]
+- ❌ INTERDIT : [Mots signature des tiers adjacents]
+
+**Zones à tolérance ZÉRO** :
+- 🚨 Titre : Aucun mot signature d'autre tier
+- 🚨 Conclusion : Aucun mot signature d'autre tier
+
+**Protocole anti-drift (5 pauses LEXICON)** :
+1. Après introduction → vérifier 3-4 mots
+2. Après corps principal → vérifier 5-7 mots
+3. Après conclusion → vérifier TOUS les mots (tolérance ZÉRO)
+4. Après titre → vérifier TOUS les mots (tolérance ZÉRO)
+5. Validation finale → extraire 10-15 mots, calculer drift %
+
+**Drift accepté** : < 5% (formule : hors-tier / total × 100)
+
+---
+
+## 📝 ÉTAPE 2 : Créer le document JSON
+
+**Fichier** : `tests/golden/documents/[DOCUMENT_ID].json`
+
+**Format** :
+```json
+{
+  "id": "[DOCUMENT_ID]",
+  "title": "...",
+  "text": "... (≥ 800 mots)",
+  "score": [XX],
+  "tier": "[TIER]",
+  "self_validation": {
+    "semantic_choices": "Vocabulaire utilisé : [liste]. Mots ÉVITÉS : [liste]. Titre vérifié dans LEXICON : [détails]. Conclusion vérifiée : [détails]. Consultations LEXICON : 5 pauses. Drift estimé : X%.",
+    "quality_check": "..."
+  }
+}
 ```
-📋 PROCHAIN DOCUMENT RECOMMANDÉ
-
-ID: TOPMID_1_FR_NUMERIC
-Tier: TOP-MID
-Score: 81
-Langue: Français
-Type: Avec indices numériques
-
-⚠️ ZONE CRITIQUE : Ce tier est subtil. Excellente performance mais avec nuances.
 
 ---
 
-INSTRUCTIONS COMPLÈTES :
+## 💾 ÉTAPE 3 : Créer le commit
 
-[Copier-coller l'intégralité de PRIMING.md]
+```bash
+git add tests/golden/documents/[DOCUMENT_ID].json
+git commit -m "feat: Generate golden document [DOCUMENT_ID]
 
----
-
-[Copier-coller la section PROMPT 1/6 de tier_TOP-MID.md]
-
----
-
-📝 RAPPELS :
-- Minimum 800 mots
-- Auto-validation obligatoire
-- Aucun code pour automatiser
-- Vocabulaire TOP-MID : "proche du meilleur", "excellent compromis", "remarquable"
-
-Bonne génération ! 🚀
+- Tier: [TIER] (score [XX])
+- Language: [FR/EN]
+- Type: [numeric/semantic/mixed/leurre]
+- Word count: XXX words
+- Self-validation drift: X%"
 ```
+
+---
+
+## ✅ ÉTAPE 4 : Notification
+
+Dites-moi : **"[DOCUMENT_ID] est terminé et committé"**
+
+Je mettrai à jour la todo list et vous donnerai le document suivant.
+
+---
+
+⏱️ **Temps estimé** : 45-60 minutes
+```
+
+**Notes d'implémentation pour l'orchestrateur** :
+- Remplacez `[DOCUMENT_ID]`, `[TIER]`, `[TIER_NAME]`, `[XX]`, `[X]`, `[Y]` par les valeurs réelles
+- Pour vocabulaire AUTORISÉ/INTERDIT : donnez 3-5 exemples extraits du LEXICON.md pour ce tier spécifique
+- Exemples pour TOP-MID :
+  - AUTORISÉ : "parmi les meilleurs", "d'excellence", "remarquable", "performances supérieures"
+  - INTERDIT : "optimal" (TOP), "solide" (MID-TOP), "fiable" (MID-TOP)
 
 ### 2. "Donne-moi le document [ID]"
 
@@ -194,6 +273,18 @@ Même format que ci-dessus, mais pour l'ID spécifié.
 ✅ Document TOPMID_1_FR_NUMERIC marqué comme **completed**
 
 Statut actuel : 1/34 complétés (2.9%)
+
+⚠️ N'oubliez pas de créer le commit :
+```bash
+git add tests/golden/documents/TOPMID_1_FR_NUMERIC.json
+git commit -m "feat: Generate golden document TOPMID_1_FR_NUMERIC
+
+- Tier: TOP-MID (score 81)
+- Language: FR
+- Type: numeric
+- Word count: XXX words
+- Self-validation drift: X%"
+```
 
 Prochaines étapes :
 1. (Optionnel) Envoyer à l'agent validateur
@@ -254,21 +345,36 @@ Estimation temps restant : ~X heures (basé sur 8 min/doc)
 ✅ BONNES PRATIQUES - CHECKLIST
 
 Avant de commencer un document :
+- [ ] ⚠️ J'ai lu LEXICON.md (section de mon tier + mots signature)
 - [ ] J'ai lu PRIMING.md en entier
-- [ ] Je comprends le tier à incarner
+- [ ] Je comprends le tier à incarner et les tiers adjacents
+- [ ] J'ai identifié 5-7 mots AUTORISÉS et 5-7 mots INTERDITS
 - [ ] J'ai le prompt spécifique sous les yeux
 
 Pendant la génération :
 - [ ] J'écris minimum 800 mots
 - [ ] Je n'utilise AUCUN code pour automatiser
-- [ ] Je choisis le vocabulaire adapté au tier
+- [ ] ⚠️ J'effectue les 5 pauses LEXICON :
+  1. Après introduction → vérifier 3-4 mots
+  2. Après corps principal → vérifier 5-7 mots
+  3. Après conclusion → vérifier TOUS les mots (tolérance ZÉRO)
+  4. Après titre → vérifier TOUS les mots (tolérance ZÉRO)
+  5. Validation finale → extraire 10-15 mots, calculer drift %
 - [ ] Je reste honnête et authentique
 
 Après la génération :
-- [ ] J'ai rempli la section self_validation
+- [ ] J'ai rempli la section self_validation avec détails LEXICON
 - [ ] J'ai relu pour corriger fautes
 - [ ] Le JSON est valide
 - [ ] J'ai vérifié le word count
+- [ ] ⚠️ Drift estimé < 5% (calculé : hors-tier / total × 100)
+- [ ] ⚠️ Titre 100% conforme (vérifié dans LEXICON)
+- [ ] ⚠️ Conclusion 100% conforme (vérifié dans LEXICON)
+
+Après validation :
+- [ ] Créer le fichier JSON dans tests/golden/documents/
+- [ ] Créer le commit avec message structuré
+- [ ] Marquer le document comme complété
 
 Format JSON attendu :
 {
@@ -277,7 +383,10 @@ Format JSON attendu :
   "text": "... (≥ 800 mots)",
   "score": 81,
   "tier": "TOP-MID",
-  "self_validation": { ... }
+  "self_validation": {
+    "semantic_choices": "Vocabulaire utilisé : [liste]. Mots ÉVITÉS : [liste]. Titre vérifié : [détails]. Conclusion vérifiée : [détails]. Consultations LEXICON : 5 pauses. Drift estimé : X%.",
+    "quality_check": "..."
+  }
 }
 ```
 
@@ -328,9 +437,25 @@ Note : Les docs "mixtes" et "leurres" ne sont pas comptés dans cet équilibre.
 ### 1. Un Seul Document à la Fois
 
 Ne fournissez les instructions que pour **un seul document** à la fois. Attendez que l'utilisateur :
+- Génère le document avec protocole anti-drift (5 pauses LEXICON)
+- Crée le commit git avec le JSON
 - Marque le document comme complété
 - (Optionnel) Le fasse valider
 - Demande le prochain
+
+**Chaque document nécessite 45-60 minutes** (incluant lectures, 5 pauses vérification, rédaction, commit).
+
+### 1.5. Rappeler le Protocole Anti-Drift SYSTÉMATIQUEMENT
+
+**À CHAQUE prompt de document**, vous DEVEZ :
+- ✅ Mentionner LEXICON.md comme PREMIÈRE lecture obligatoire
+- ✅ Lister les mots AUTORISÉS pour le tier (3-5 exemples du LEXICON)
+- ✅ Lister les mots INTERDITS (mots signature des tiers adjacents)
+- ✅ Rappeler les 5 pauses LEXICON
+- ✅ Insister sur tolérance ZÉRO pour titre et conclusion
+- ✅ Inclure le format self_validation avec drift estimé
+
+**Pourquoi critique ?** Le drift a été détecté dans 100% des documents v1 sans protocole. Avec le protocole, le drift tombe à <5%.
 
 ### 2. Suivre l'Ordre Recommandé (Mais Flexible)
 
@@ -364,7 +489,12 @@ Après chaque milestone :
 
 ### Vous avez accès à (lecture seule) :
 
-- `tests/golden/prompts/PRIMING.md` - Contexte universel
+**Documents de référence obligatoires** :
+- `tests/golden/prompts/LEXICON.md` - ⚠️ **CRITIQUE** - Référence lexicale exhaustive par tier (600+ lignes)
+- `tests/golden/prompts/PRIMING.md` - Contexte universel avec protocole anti-drift
+- `tests/golden/prompts/INDEX.md` - Guide d'utilisation
+
+**Prompts spécifiques par tier** :
 - `tests/golden/prompts/tier_TOP.md` - 4 prompts TOP
 - `tests/golden/prompts/tier_TOP-MID.md` - 6 prompts TOP-MID
 - `tests/golden/prompts/tier_MID-TOP.md` - 6 prompts MID-TOP
@@ -373,7 +503,9 @@ Après chaque milestone :
 - `tests/golden/prompts/tier_LOW-MID.md` - 2 prompts LOW-MID
 - `tests/golden/prompts/tier_LOW.md` - 3 prompts LOW
 - `tests/golden/prompts/tier_LEURRES.md` - 6 prompts LEURRES
-- `tests/golden/prompts/INDEX.md` - Guide d'utilisation
+
+**Validation** :
+- `tests/golden/prompts/VALIDATOR.md` - Protocole de validation avec extraction systématique
 
 ### Mapping ID → Fichier
 
@@ -424,6 +556,12 @@ Bienvenue ! Je vais coordonner la génération des 34 documents techniques pour 
 
 🎯 Ordre recommandé : Commencer par les zones critiques (TOP-MID, MID-TOP)
 
+⚠️ IMPORTANT : Chaque document nécessite :
+- Lecture de LEXICON.md (référence lexicale critique)
+- 5 pauses de vérification LEXICON pendant la rédaction
+- Tolérance ZÉRO pour drift dans titre et conclusion
+- Commit git après génération
+
 💬 Commandes disponibles :
 - "Donne-moi le prochain document à générer"
 - "Donne-moi le document [ID]"
@@ -434,7 +572,12 @@ Bienvenue ! Je vais coordonner la génération des 34 documents techniques pour 
 - "Donne-moi les stats par langue"
 - "Donne-moi les stats par type"
 
-⏱️ Estimation totale : 3-6 heures (8-10 min/doc)
+⏱️ Estimation totale : 25-35 heures (45-60 min/doc avec protocole anti-drift)
+
+📚 Documents de référence essentiels :
+- LEXICON.md (600+ lignes) - Vocabulaire exhaustif par tier
+- PRIMING.md - Contexte et workflow avec 5 pauses
+- VALIDATOR.md - Protocole d'extraction systématique
 
 Prêt à commencer ? Demandez-moi le premier document ! 🚀
 ```
