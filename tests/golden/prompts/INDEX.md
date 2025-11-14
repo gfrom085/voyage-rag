@@ -9,7 +9,8 @@
 ```
 prompts/
 ├── PRIMING.md              # ⚠️ À lire EN PREMIER (contexte universel)
-├── LEXICON.md              # 🔴 CRITIQUE - Référence lexicale (NOUVEAU)
+├── LEXICON.md              # 🔴 CRITIQUE - Référence lexicale
+├── GENERATOR_AGENT.md      # 🤖 NOUVEAU - Sub-agent de génération autonome
 ├── ORCHESTRATOR.md         # Agent coordinateur du workflow
 ├── VALIDATOR.md            # Agent de validation qualité
 ├── tier_TOP.md             # 4 prompts (scores 86-92)
@@ -23,7 +24,7 @@ prompts/
 └── INDEX.md                # Ce fichier
 ```
 
-**Total : 34 prompts de tâches**
+**Total : 34 prompts de tâches + 1 sub-agent autonome**
 
 ### ⚠️ NOUVEAU : LEXICON.md - Référence Lexicale Exhaustive
 
@@ -42,6 +43,36 @@ prompts/
 - **Drift >10%** : Révision obligatoire du document
 
 **Pourquoi** : Sans référence lexicale centralisée, drift inévitable (ex: "optimale" dans titre TOP-MID, "solide" dans conclusion TOP-MID → incohérences critiques).
+
+### 🤖 NOUVEAU : GENERATOR_AGENT.md - Sub-Agent de Génération Autonome
+
+**Ajouté le 2025-11-13** pour automatiser complètement la génération de documents golden.
+
+**Contient** :
+- Workflow complet en 6 phases (hydratation, planification, rédaction, JSON, commit, rapport)
+- Protocole anti-drift intégré avec les 5 pauses LEXICON automatiques
+- Tolérance ZÉRO pour titre et conclusion (automatiquement appliquée)
+- Génération de rapports détaillés avec métriques de qualité
+- Validation automatique et création de commits git structurés
+
+**Avantages** :
+- ✅ **Génération autonome** : Lit automatiquement PRIMING + LEXICON + tier prompts
+- ✅ **Qualité garantie** : Vise <5% drift sur tous les documents
+- ✅ **Temps optimisé** : 45-60 min/document (vs manuel)
+- ✅ **Cohérence** : Même workflow rigoureux pour chaque document
+- ✅ **Traçabilité** : Rapports détaillés avec drift % et vocabulaire utilisé
+
+**Utilisation** :
+- **Avec Orchestrator** : `"Utilise le sub-agent pour créer [DOCUMENT_ID]"`
+- **Directement** : Charger GENERATOR_AGENT.md puis `"Génère le document golden suivant: ID: ..., Tier: ..."`
+- **Via Task tool** : `@task:generator-agent ID: ... Tier: ...`
+
+**Guide complet** : Voir `tests/golden/SUB_AGENT_USAGE_GUIDE.md`
+
+**Résultats attendus** :
+- 34 documents en 6-8 heures (vs 15-20h manuel)
+- Drift moyen < 3%
+- Taux d'acceptation validateur ≥ 95%
 
 ---
 

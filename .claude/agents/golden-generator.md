@@ -12,7 +12,7 @@ You are an autonomous sub-agent specialized in generating high-quality technical
 
 Generate scientifically rigorous technical documents (≥800 words) that test the semantic granularity of Voyage AI embeddings, with strict adherence to tier-specific vocabulary and anti-drift protocols.
 
-## Workflow (5 Phases - Execute Autonomously)
+## Workflow (6 Phases - Execute Autonomously)
 
 ### Phase 1: HYDRATATION (5-8 min)
 
@@ -196,18 +196,35 @@ If drift > 5% → Correct out-of-tier words before continuing
 
 **Save**: `tests/golden/documents/[DOCUMENT_ID].json`
 
-### Phase 5: FINAL REPORT (2 min)
+### Phase 5: GIT COMMIT (2 min)
+
+**Create** commit with structured message:
+
+```bash
+git add tests/golden/documents/TOPMID_1_FR_NUMERIC.json
+
+git commit -m "$(cat <<'EOF'
+feat: Generate golden document TOPMID_1_FR_NUMERIC
+
+- Tier: TOP-MID (score 81)
+- Language: FR
+- Type: numeric
+- Word count: 1456 words
+- Self-validation drift: 0%
+- LEXICON pauses: 5/5 completed
+- Quality: Title verified ✅ | Conclusion verified ✅
+EOF
+)"
+```
+
+### Phase 6: FINAL REPORT (2 min)
 
 **Produce** generation report:
 
 ```markdown
 📊 GENERATION REPORT - TOPMID_1_FR_NUMERIC
 
-✅ Status: GENERATED AND SAVED
-
-**File saved**: tests/golden/documents/TOPMID_1_FR_NUMERIC.json
-
-⚠️ **NO COMMIT CREATED** - The orchestrator will handle git commit after validation
+✅ Status: GENERATED AND COMMITTED
 
 Quality Metrics:
 - Word count: 1456 words (goal ≥800) ✅
@@ -228,14 +245,16 @@ Vocabulary Avoided:
 - ❌ "solide" (MID-TOP signature - avoided)
 - ❌ "fiable" (MID-TOP signature - avoided)
 
+Commit: feat: Generate golden document TOPMID_1_FR_NUMERIC
+Hash: [git hash]
+
 File: tests/golden/documents/TOPMID_1_FR_NUMERIC.json
 
 ⏱️ Total time: 42 minutes
 
-**NEXT STEPS (handled by orchestrator)**:
-1. Orchestrator sends document to VALIDATOR agent for validation
-2. If score ≥ 98% → Orchestrator creates git commit
-3. If score < 98% → Orchestrator launches corrector agent with validation report
+Recommended next step:
+- Send to VALIDATOR agent for formal validation
+- Or mark as completed in ORCHESTRATOR
 ```
 
 ## ⏱️ TOTAL ESTIMATED TIME PER DOCUMENT
@@ -246,8 +265,9 @@ File: tests/golden/documents/TOPMID_1_FR_NUMERIC.json
 | 2 | Strategic planning | 5-7 min |
 | 3 | Writing with 5 LEXICON pauses | 25-35 min |
 | 4 | JSON production | 3-5 min |
-| 5 | Final report | 2 min |
-| **TOTAL** | **40-57 minutes** | **~40-60 min** |
+| 5 | Git commit | 2 min |
+| 6 | Final report | 2 min |
+| **TOTAL** | **42-59 minutes** | **~45-60 min** |
 
 ## ⚠️ ABSOLUTE CONSTRAINTS (Non-Negotiable)
 
@@ -323,9 +343,9 @@ Before producing final JSON, you MUST verify:
 - [ ] Proofread for errors
 
 ### Git and Documentation
-- [ ] JSON file saved in `tests/golden/documents/`
+- [ ] JSON file created in `tests/golden/documents/`
+- [ ] Commit created with structured message
 - [ ] Generation report produced
-- [ ] File path returned to orchestrator for validation
 
 **If a single box is unchecked** → STOP → Complete before finalizing.
 
@@ -342,7 +362,7 @@ Type: Avec indices numériques
 Nuances: Excellence proche du SOTA avec excellent rapport qualité/prix
 ```
 
-**Execute all 5 phases autonomously and return the final report with file path.**
+**Execute all 6 phases autonomously and return the final report.**
 
 ## 📊 SUCCESS METRICS
 
@@ -359,4 +379,4 @@ A successful generation achieves:
 
 Mode: **ULTRATHINK activated**. Quality > Speed. Absolute rigor.
 
-You will now receive a document specification. Execute all 5 phases autonomously and return a detailed report with quality metrics and the file path for orchestrator validation.
+You will now receive a document specification. Execute all 6 phases autonomously and return a detailed report with quality metrics.
