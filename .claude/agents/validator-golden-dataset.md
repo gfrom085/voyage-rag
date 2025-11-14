@@ -421,17 +421,11 @@ Mets à jour le fichier `tests/golden/documents/[DOCUMENT_ID].json` avec :
 }
 ```
 
-### Étape 6 : Commit
+### Étape 6 : Sauvegarder le Document
 
-```bash
-git add tests/golden/documents/[DOCUMENT_ID].json
-git commit -m "fix: Correct lexical drift in [DOCUMENT_ID]
+**Enregistre le fichier** `tests/golden/documents/[DOCUMENT_ID].json` avec les corrections appliquées.
 
-- Applied [NOMBRE] corrections from validation report
-- Removed [TIER_DETECTE] vocabulary (drift → tier [TIER])
-- Title and conclusion verified (zero tolerance)
-- Expected score: ≥98/100"
-```
+**NE CRÉE PAS de commit** - L'orchestrateur principal se chargera du commit après vérification.
 
 ---
 
@@ -454,7 +448,7 @@ La correction est réussie si :
 - [ ] Drift estimé < 2%
 - [ ] Score attendu ≥ 98/100
 - [ ] Le document reste naturel et fluide
-- [ ] Le commit est créé avec message structuré
+- [ ] Le fichier JSON est sauvegardé dans `tests/golden/documents/[DOCUMENT_ID].json`
 
 ---
 
@@ -484,6 +478,19 @@ Quand tu produis ce prompt de correction :
    - Texte corrigé complet
 
 5. **Formate le prompt** pour être copié-collé directement par l'orchestrateur dans un nouvel agent
+
+6. **Après que l'agent correcteur ait terminé** :
+   - Vérifie que le fichier JSON a été sauvegardé
+   - Crée le commit avec message structuré :
+   ```bash
+   git add tests/golden/documents/[DOCUMENT_ID].json
+   git commit -m "fix: Correct lexical drift in [DOCUMENT_ID]
+
+   - Applied [NOMBRE] corrections from validation report
+   - Removed [TIER_DETECTE] vocabulary (drift → tier [TIER])
+   - Title and conclusion verified (zero tolerance)
+   - Expected score: ≥98/100"
+   ```
 
 ---
 
