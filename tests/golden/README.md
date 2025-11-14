@@ -13,10 +13,21 @@ tests/golden/
 │   ├── queries.json                 # Requêtes de test
 │   └── ground_truth.json            # Résultats attendus (ranked lists)
 │
+├── documents/                        # Generated golden documents (34 total)
+│
+├── prompts/                          # Document generation prompts
+│   ├── PRIMING.md                   # Universal context (828 lines)
+│   ├── LEXICON.md                   # Vocabulary reference (496 lines)
+│   ├── ORCHESTRATOR.md              # Workflow coordinator
+│   ├── VALIDATOR.md                 # Validation protocol
+│   └── tier_*.md                    # Tier-specific prompts (8 files)
+│
 ├── test_semantic_granularity.py     # Test principal de granularité
 ├── test_robustness_simple.py        # Tests de robustesse (typos, FR/EN)
 ├── metrics.py                        # Métriques d'évaluation
 ├── generate_simple_dataset.py       # Générateur de dataset contrôlé
+├── SUB_AGENT_USAGE_GUIDE.md         # Sub-agent usage documentation
+├── QUICK_START.md                   # Quick start guide
 └── README.md                         # Cette documentation
 ```
 
@@ -48,10 +59,42 @@ tests/golden/
 - **Kendall's Tau**: Corrélation de rang entre prédiction et ground truth
 - **Marges cosinus**: sim(rank_1) - sim(rank_2) pour mesurer la confiance
 
-## Utilisation
+## Génération du Golden Dataset (Nouveau)
+
+### Méthode Recommandée : Sub-Agent Automatique
+
+Le projet utilise maintenant un **sub-agent Claude Code officiel** pour générer les 34 documents golden automatiquement :
+
+```
+@golden-generator
+
+ID: TOPMID_1_FR_NUMERIC
+Tier: TOP-MID
+Score: 81
+Language: Français
+Type: Avec indices numériques
+Nuances: Excellence proche du SOTA avec excellent rapport qualité/prix
+```
+
+**Avantages** :
+- ✅ Génération autonome (45-60 min/document)
+- ✅ Protocole anti-drift intégré (<5% drift)
+- ✅ Validation automatique
+- ✅ Commit git automatique
+
+**Documentation** :
+- Configuration sub-agent : `.claude/agents/golden-generator.md`
+- Guide complet : `.claude/AGENTS.md`
+- Usage détaillé : `tests/golden/SUB_AGENT_USAGE_GUIDE.md`
+
+### Méthode Alternative : Workflow Manuel
+
+Voir `tests/golden/QUICK_START.md` pour le workflow manuel avec ORCHESTRATOR et VALIDATOR.
+
+## Utilisation des Tests
 
 ```bash
-# Générer le dataset de test
+# Générer le dataset de test (simple)
 python tests/golden/generate_simple_dataset.py
 
 # Exécuter les tests de granularité
