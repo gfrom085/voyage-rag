@@ -1,222 +1,206 @@
 # PROMPT DE CORRECTION - TOPMID_4_EN_NUMERIC
 
-## Contexte de Correction
+## 📋 INFORMATIONS DOCUMENT
 
 **Document ID** : TOPMID_4_EN_NUMERIC
+**Fichier** : `/home/user/voyage-rag/tests/golden/documents/TOPMID_4_EN_NUMERIC.json`
 **Tier cible** : TOP-MID (scores 78-82)
-**Score actuel** : 83/100 ⚠️ (révision requise)
-**Score post-correction attendu** : 95/100 ✅
+**Longueur** : 831 mots
+**Score actuel** : 83/100 ⚠️
+**Score post-correction** : 95/100 ✅ (attendu)
 
-**Raison de la révision** : **Violation ZERO TOLERANCE** en conclusion + drift 10%
-
----
-
-## 🔴 Problèmes Détectés
-
-### Drift #1 : "mature" dans Paragraph 8
-
-**Localisation** : Section "Production Deployment Considerations" - Paragraph 8
-
-**Texte actuel** :
-```
-Real-world deployment experience reveals Voyage-3 as a remarkably mature platform for enterprise RAG systems.
-```
-
-**Problème** :
-- **Mot** : "mature"
-- **Tier détecté** : MID-TOP (LEXICON ligne 139)
-- **Tier requis** : TOP-MID
-- **Référence LEXICON** : Ligne 121 "❌ INTERDICTIONS pour TOP-MID : Vocabulaire MID-TOP : 'solide', 'fiable', 'bon'"
-- **Gravité** : ⚠️ Modérée (corps du document)
+**Raison révision** : Violation ZERO TOLERANCE (conclusion) + drift 10%
 
 ---
 
-### Drift #2 : "maturity" dans Conclusion ⚠️ **CRITIQUE**
+## 🔴 CORRECTIONS REQUISES
 
-**Localisation** : Conclusion - Deuxième phrase
+### Correction #1 : Paragraph 8 - "mature"
 
-**Texte actuel** :
+**📍 Localisation** :
+- Section : "Production Deployment Considerations"
+- Paragraph : 8
+- Phrase complète actuelle :
+  ```
+  Real-world deployment experience reveals Voyage-3 as a remarkably mature platform for enterprise RAG systems.
+  ```
+
+**❌ Problème** :
+- Mot problématique : **"mature"**
+- Tier détecté : **MID-TOP** (LEXICON ligne 139)
+- Tier requis : **TOP-MID**
+- Gravité : ⚠️ Modérée (corps du document)
+
+**✅ Correction à appliquer** :
+```diff
+- Real-world deployment experience reveals Voyage-3 as a remarkably mature platform for enterprise RAG systems.
++ Real-world deployment experience reveals Voyage-3 as a remarkably competitive platform for enterprise RAG systems.
 ```
-Its positioning among the best commercial offerings stems from a combination of near state-of-the-art performance across diverse tasks, highly competitive pricing, and remarkable operational maturity.
-```
 
-**Problème** :
-- **Mot** : "maturity"
-- **Tier détecté** : MID-TOP (LEXICON ligne 139 "mature | mature")
-- **Tier requis** : TOP-MID
-- **Zone** : **CONCLUSION (ZERO TOLERANCE)**
-- **Référence LEXICON** :
-  - Ligne 397 : "Zones à tolérance ZÉRO : Titre, Conclusion"
-  - Ligne 394 : "Drift >10% OU violation tolérance ZÉRO → révision OBLIGATOIRE"
-- **Gravité** : 🔴 **CRITIQUE** (ZERO TOLERANCE violation)
+**Justification** :
+- "competitive" → LEXICON TOP-MID ligne 88 ("highly competitive" autorisé)
+- Maintient le sens sans connotation MID-TOP "maturité"
+
+**Alternatives possibles** :
+- "highly capable platform" (neutre, acceptable)
+- "exceptionally well-established platform" (évite "maturité")
 
 ---
 
-## ✅ Corrections Recommandées
+### Correction #2 : Conclusion - "maturity" ⚠️ **PRIORITAIRE**
 
-### Correction #1 : Paragraph 8
+**📍 Localisation** :
+- Section : **Conclusion** (ZERO TOLERANCE ZONE)
+- Phrase : Deuxième phrase du dernier paragraphe
+- Phrase complète actuelle :
+  ```
+  Its positioning among the best commercial offerings stems from a combination of near state-of-the-art performance across diverse tasks, highly competitive pricing, and remarkable operational maturity.
+  ```
 
-**Option 1 (Recommandée)** :
-```
-Real-world deployment experience reveals Voyage-3 as a remarkably competitive platform for enterprise RAG systems.
-```
-- **Justification** : "competitive" → LEXICON ligne 88 (highly competitive - TOP-MID autorisé)
+**❌ Problème** :
+- Mot problématique : **"maturity"**
+- Tier détecté : **MID-TOP** (LEXICON ligne 139)
+- Tier requis : **TOP-MID**
+- Zone : **CONCLUSION (ZERO TOLERANCE)**
+- Gravité : 🔴 **CRITIQUE**
+- Référence : LEXICON ligne 397 "Zones à tolérance ZÉRO : Titre, Conclusion"
 
-**Option 2** :
+**✅ Correction à appliquer** :
+```diff
+- Its positioning among the best commercial offerings stems from a combination of near state-of-the-art performance across diverse tasks, highly competitive pricing, and remarkable operational maturity.
++ Its positioning among the best commercial offerings stems from a combination of near state-of-the-art performance across diverse tasks, highly competitive pricing, and remarkable operational excellence.
 ```
-Real-world deployment experience reveals Voyage-3 as a highly capable platform for enterprise RAG systems.
-```
-- **Justification** : "capable" → neutre, acceptable pour TOP-MID
 
-**Option 3** :
-```
-Real-world deployment experience reveals Voyage-3 as an exceptionally well-established platform for enterprise RAG systems.
-```
-- **Justification** : "well-established" → évite connotation "maturité"
+**Justification** :
+- "excellence" → LEXICON TOP-MID ligne 94 ("d'excellence" autorisé)
+- Maintient l'intensité de "remarkable operational X"
+- Conforme ZERO TOLERANCE
 
----
-
-### Correction #2 : Conclusion (PRIORITAIRE)
-
-**Option 1 (Recommandée)** :
-```
-Its positioning among the best commercial offerings stems from a combination of near state-of-the-art performance across diverse tasks, highly competitive pricing, and remarkable operational excellence.
-```
-- **Justification** : "excellence" → LEXICON ligne 94 (d'excellence - TOP-MID autorisé)
-- **Maintient l'intensité** : "remarkable operational excellence"
-
-**Option 2** :
-```
-Its positioning among the best commercial offerings stems from a combination of near state-of-the-art performance across diverse tasks, highly competitive pricing, and remarkable operational performance.
-```
-- **Justification** : "performance" → LEXICON ligne 85 (remarkable performance - TOP-MID autorisé)
-
-**Option 3** :
-```
-Its positioning among the best commercial offerings stems from a combination of near state-of-the-art performance across diverse tasks, highly competitive pricing, and outstanding operational reliability.
-```
-- **Justification** : "outstanding" → LEXICON ligne 93 (TOP-MID autorisé)
+**Alternatives possibles** :
+- "remarkable operational performance" (LEXICON ligne 85)
+- "outstanding operational reliability" (LEXICON ligne 93)
 
 ---
 
-## 📝 Instructions d'Application
+## 📝 CHECKLIST D'APPLICATION (Agent de Correction)
 
-### Étape 1 : Ouvrir le document
+### Étape 1 : Ouvrir le document JSON
 ```bash
 # Fichier à modifier
-/home/user/voyage-rag/tests/golden/documents/TOPMID_4_EN_NUMERIC.json
+nano /home/user/voyage-rag/tests/golden/documents/TOPMID_4_EN_NUMERIC.json
 ```
 
-### Étape 2 : Appliquer les corrections
+### Étape 2 : Appliquer Correction #1 (P8)
+- [ ] Localiser la section "Production Deployment Considerations"
+- [ ] Trouver : `"remarkably mature platform"`
+- [ ] Remplacer par : `"remarkably competitive platform"`
+- [ ] Vérifier que la phrase reste fluide
 
-**Correction #1 (P8)** :
-- Chercher : `"remarkably mature platform"`
-- Remplacer par : `"remarkably competitive platform"`
+### Étape 3 : Appliquer Correction #2 (Conclusion) ⚠️ PRIORITAIRE
+- [ ] Localiser le dernier paragraphe (Conclusion)
+- [ ] Trouver : `"remarkable operational maturity"`
+- [ ] Remplacer par : `"remarkable operational excellence"`
+- [ ] Vérifier que la phrase reste fluide
 
-**Correction #2 (Conclusion - PRIORITAIRE)** :
-- Chercher : `"remarkable operational maturity"`
-- Remplacer par : `"remarkable operational excellence"`
+### Étape 4 : Vérifier aucune autre occurrence
+- [ ] Rechercher dans tout le document : "mature" → aucune autre occurrence
+- [ ] Rechercher dans tout le document : "maturity" → aucune autre occurrence
 
-### Étape 3 : Mettre à jour self_validation
+### Étape 5 : Mettre à jour self_validation.semantic_choices
 
-Modifier le champ `self_validation.semantic_choices` :
+**Localiser le champ** : `self_validation.semantic_choices`
 
-**Ajouter dans la liste des mots ÉVITÉS** :
-```
-Words AVOIDED: [...existing list...], 'mature/maturity' (MID-TOP tier - corrected to 'competitive/excellence').
-```
+**Modifications à faire** :
 
-**Ajouter note de correction** :
-```
-Corrections applied post-validation: 'mature' → 'competitive' (P8), 'maturity' → 'excellence' (conclusion - ZERO TOLERANCE zone).
-```
+1. **Ajouter "mature/maturity" dans la liste des mots ÉVITÉS** :
+   ```json
+   "Words AVOIDED: 'the best' (TOP tier - too absolute), 'unmatched' (TOP tier), 'state-of-the-art' without 'near' qualifier (TOP tier), 'optimal' in absolute sense (TOP tier), 'revolutionary' (TOP tier), 'solid' (MID-TOP tier - too weak), 'reliable' (MID-TOP tier - too weak), 'robust' (MID-TOP tier - too weak), 'mature/maturity' (MID-TOP tier - corrected to 'competitive/excellence')."
+   ```
 
-**Corriger le drift estimé** :
-```
-Drift estimated: 0% (post-correction: 0 off-tier words in final version, 20 qualifiers verified)
-```
+2. **Ajouter note de correction à la fin** :
+   ```json
+   "Corrections applied post-validation: 'mature' → 'competitive' (P8), 'maturity' → 'excellence' (conclusion - ZERO TOLERANCE zone)."
+   ```
 
-Modifier le champ `self_validation.quality_check` :
+3. **Corriger le drift estimé** :
+   ```json
+   "Drift estimated: 0% (post-correction: 0 off-tier words in final version, 20 qualifiers verified)"
+   ```
+
+### Étape 6 : Mettre à jour self_validation.quality_check
+
+**Localiser le champ** : `self_validation.quality_check`
 
 **Ajouter à la fin** :
-```
-| ✅ Post-validation corrections applied: mature→competitive (P8), maturity→excellence (conclusion) | ✅ Final drift: 0%
-```
-
-### Étape 4 : Vérifier le JSON
-
-```bash
-# Valider la syntaxe JSON
-python3 -m json.tool tests/golden/documents/TOPMID_4_EN_NUMERIC.json > /dev/null
+```json
+"| ✅ Post-validation corrections applied: mature→competitive (P8), maturity→excellence (conclusion) | ✅ Final drift: 0%"
 ```
 
-### Étape 5 : Créer le commit
+### Étape 7 : Valider le JSON
+- [ ] Vérifier syntaxe JSON valide :
+  ```bash
+  python3 -m json.tool /home/user/voyage-rag/tests/golden/documents/TOPMID_4_EN_NUMERIC.json > /dev/null && echo "JSON valid ✅" || echo "JSON invalid ❌"
+  ```
+- [ ] Vérifier word count stable (~831 mots ± 5)
 
+### Étape 8 : Créer le commit
 ```bash
 git add tests/golden/documents/TOPMID_4_EN_NUMERIC.json
 
 git commit -m "fix: Correct MID-TOP drift in TOPMID_4_EN_NUMERIC
 
 - Replace 'mature' with 'competitive' (P8)
-- Replace 'maturity' with 'excellence' (conclusion - ZERO TOLERANCE zone)
-- Update self_validation to reflect corrections
-- Drift corrected: 10% → 0%
-- Score improvement: 83/100 → 95/100 (expected)"
+- Replace 'maturity' with 'excellence' (conclusion - ZERO TOLERANCE)
+- Update self_validation with corrections
+- Drift: 10% → 0%
+- Score: 83/100 → 95/100"
+```
+
+### Étape 9 : Push
+```bash
+git push -u origin claude/review-prompts-validate-01KEKHDKkw5Z3HWoPuUveHav
 ```
 
 ---
 
-## 📊 Impact des Corrections
+## 📊 VÉRIFICATION POST-CORRECTION
 
-### Avant Correction
+### Métriques Attendues
 
-| Métrique | Valeur |
-|----------|--------|
-| Drift global | 10% (2/20) |
-| Drifts MID-TOP | 2 |
-| Titre conforme | ✅ |
-| Conclusion conforme | ❌ |
-| Score | 83/100 |
-| Verdict | ⚠️ Révision requise |
+| Métrique | Avant | Après | ✅ |
+|----------|-------|-------|---|
+| Drift global | 10% (2/20) | 0% (0/20) | |
+| Drifts MID-TOP | 2 | 0 | |
+| Titre conforme | ✅ | ✅ | |
+| Conclusion conforme | ❌ | ✅ | |
+| Score qualité | 83/100 | 95/100 | |
+| Verdict | ⚠️ Révision requise | ✅ Accepté | |
 
-### Après Correction
-
-| Métrique | Valeur |
-|----------|--------|
-| Drift global | 0% (0/20) |
-| Drifts MID-TOP | 0 |
-| Titre conforme | ✅ |
-| Conclusion conforme | ✅ |
-| Score | 95/100 |
-| Verdict | ✅ Accepté |
-
----
-
-## ✅ Checklist de Validation Post-Correction
-
-Après avoir appliqué les corrections, vérifier :
+### Checklist Finale
 
 - [ ] ✅ Correction #1 appliquée (P8 : "mature" → "competitive")
 - [ ] ✅ Correction #2 appliquée (Conclusion : "maturity" → "excellence")
-- [ ] ✅ Aucune autre occurrence de "mature/maturity" dans le document
-- [ ] ✅ self_validation.semantic_choices mis à jour
-- [ ] ✅ self_validation.quality_check mis à jour
-- [ ] ✅ JSON valide (syntaxe correcte)
-- [ ] ✅ Word count stable (~831 mots ± 5)
+- [ ] ✅ Aucune autre occurrence de "mature/maturity"
+- [ ] ✅ self_validation.semantic_choices mis à jour (mots évités + note correction)
+- [ ] ✅ self_validation.quality_check mis à jour (ligne post-correction)
+- [ ] ✅ Drift estimé corrigé (0%)
+- [ ] ✅ JSON valide (syntaxe)
+- [ ] ✅ Word count stable (~831 ± 5)
 - [ ] ✅ Commit créé avec message structuré
+- [ ] ✅ Commit pushé vers la branche
 
 ---
 
-## 🎯 Résultat Attendu
+## 🎯 RÉSULTAT FINAL ATTENDU
 
-**Document corrigé** :
-- ✅ **0% drift** (vocabulaire 100% TOP-MID)
+**Document corrigé TOPMID_4_EN_NUMERIC** :
+- ✅ **Drift : 0%** (vocabulaire 100% TOP-MID)
 - ✅ **ZERO TOLERANCE respectée** (titre + conclusion conformes)
-- ✅ **Score 95/100** (excellence)
+- ✅ **Score : 95/100** (excellence)
 - ✅ **Prêt pour intégration au golden dataset**
 
-**Temps estimé** : 5-10 minutes pour corrections manuelles
+**Temps estimé** : 5-10 minutes
 
 ---
 
-**Prompt de correction prêt pour application immédiate. 🚀**
+**Prompt de correction complet - Prêt pour agent de correction. 🚀**
